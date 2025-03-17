@@ -2478,39 +2478,280 @@ HAVING mi.page_group IS NOT NULL AND mi.page_group != '';
   // },
   // recent original end
 
+  // module_info_list_list: async (req, res) => {
+  //   const userId = req.params.id;
+  //   const query = `SELECT role_name FROM users WHERE id = ?`;
+  
+  //   connection.query(query, [userId], (error, results) => {
+  //     if (error) {
+  //       console.error('Error executing query:', error);
+  //       res.status(500).send('Internal Server Error');
+  //       return;
+  //     }
+  
+  //     if (results.length === 0) {
+  //       console.log('User not found');
+  //       res.status(404).send('User not found');
+  //       return;
+  //     }
+  
+  //     const roleName = results[0].role_name;
+  //     console.log('Role name:', roleName);
+  
+  //     const permissionQuery = `SELECT user_page_list_id FROM user_role_permission WHERE user_role_id = ?`;
+  
+  //     connection.query(permissionQuery, [roleName], (permissionError, permissionResults) => {
+  //       if (permissionError) {
+  //         console.error('Error executing permission query:', permissionError);
+  //         res.status(500).send('Internal Server Error');
+  //         return;
+  //       }
+  
+  //       if (permissionResults.length === 0) {
+  //         console.log('No permissions found for the role:', roleName);
+  //         res.status(404).send('No permissions found for the role');
+  //         return;
+  //       }
+  
+  //       const userPageListId = permissionResults[0].user_page_list_id;
+  //       const userPageListIds = userPageListId.split(',').map(Number);
+  //       console.log('User page list id:', userPageListIds);
+  
+  //       let getPageGroupAndControllerNamesQuery = `
+  //         SELECT mi.id AS page_group_id, mi.page_group, mi.controller_name, mi.display_name, mi.method_name, mi.method_sort, mi.menu_type, mi.id
+  //         FROM module_info mi
+  //         WHERE mi.parent_id != 0
+  //           AND mi.id IN (?)
+  //           AND mi.page_group IS NOT NULL
+  //           AND mi.page_group != ''
+  //       `;
+  
+  //       // If the role_name is not 6, exclude 'user_role_access'
+  //       if (roleName !== 1) {
+  //         getPageGroupAndControllerNamesQuery += ` AND mi.controller_name != 'user_role_access'`;
+  //       }
+  
+  //       getPageGroupAndControllerNamesQuery += `
+  //         GROUP BY mi.page_group, mi.controller_name, mi.display_name, mi.method_name, mi.method_sort, mi.menu_type, mi.id
+  //         ORDER BY mi.controller_sort ASC, mi.method_sort ASC
+  //       `;
+  
+  //       connection.query(getPageGroupAndControllerNamesQuery, [userPageListIds], (getPageGroupError, getPageGroupResults) => {
+  //         if (getPageGroupError) {
+  //           console.error('Error executing MySQL query:', getPageGroupError);
+  //           res.status(500).json({ message: 'Internal server error' });
+  //           return;
+  //         }
+  
+  //         // Ensure no 'user_role_access' controller is shown if role_name is not 6
+  //         const filteredResults = getPageGroupResults.filter((row) => {
+  //           if (row.controller_name === 'user_role_access' && roleName !== 1) {
+  //             return false;
+  //           }
+  //           return true;
+  //         });
+  
+  //         const groupedData = filteredResults.reduce((acc, row) => {
+  //           const { page_group_id, page_group, controller_name, display_name, method_name, method_sort, menu_type, id } = row;
+  //           const pageGroupLowerCase = page_group.toLowerCase();
+  
+  //           if (!acc[pageGroupLowerCase]) {
+  //             acc[pageGroupLowerCase] = {
+  //               page_group_id: '',
+  //               page_group: pageGroupLowerCase,
+  //               controllers: [],
+  //             };
+  //           }
+  
+  //           const controller = acc[pageGroupLowerCase].controllers.find((c) => c.controller_name.toLowerCase() === controller_name.toLowerCase());
+  
+  //           if (controller) {
+  //             const display = controller.display_names.find((d) => d.display_name.toLowerCase() === display_name.toLowerCase());
+  //             if (display) {
+  //               display.method_id = id;
+  //               display.method_sort = method_sort;
+  //               display.menu_type = menu_type;
+  //             } else {
+  //               controller.display_names.push({ display_name, method_id: id, method_sort, menu_type, method_names: [method_name] });
+  //             }
+  //           } else {
+  //             acc[pageGroupLowerCase].controllers.push({
+  //               controller_name,
+  //               display_names: [{ display_name, method_id: id, method_sort, menu_type, method_names: [method_name] }],
+  //             });
+  //           }
+  
+  //           return acc;
+  //         }, {});
+  
+  //         const responseData = Object.values(groupedData);
+  
+  //         if (responseData.length > 0) {
+  //           res.json(responseData);
+  //         } else {
+  //           res.status(404).json({ message: 'Data not found' });
+  //         }
+  //       });
+  //     });
+  //   });
+  // },
+  
+  // module_info_list_list: async (req, res) => {
+  //   const userId = req.params.id;
+  //   const query = `SELECT role_name FROM users WHERE id = ?`;
+  
+  //   connection.query(query, [userId], (error, results) => {
+  //     if (error) {
+  //       console.error('Error executing query:', error);
+  //       return res.status(500).send('Internal Server Error');
+  //     }
+  
+  //     if (results.length === 0) {
+  //       console.log('User not found');
+  //       return res.status(404).send('User not found');
+  //     }
+  
+  //     const roleName = results[0].role_name;
+  //     console.log('Role name:', roleName);
+  
+  //     const permissionQuery = `SELECT user_page_list_id FROM user_role_permission WHERE user_role_id = ?`;
+  
+  //     connection.query(permissionQuery, [roleName], (permissionError, permissionResults) => {
+  //       if (permissionError) {
+  //         console.error('Error executing permission query:', permissionError);
+  //         return res.status(500).send('Internal Server Error');
+  //       }
+  
+  //       if (permissionResults.length === 0) {
+  //         console.log('No permissions found for the role:', roleName);
+  //         return res.status(404).send('No permissions found for the role');
+  //       }
+  
+  //       const userPageListId = permissionResults[0].user_page_list_id;
+  //       const userPageListIds = userPageListId.split(',').map(Number);
+  //       console.log('User page list id:', userPageListIds);
+  
+  //       let getPageGroupAndControllerNamesQuery = `
+  //         SELECT mi.id AS page_group_id, mi.page_group, mi.controller_name, mi.display_name, 
+  //                mi.method_name, mi.method_sort, mi.menu_type, mi.menu_category, mi.parent_id 
+  //         FROM module_info mi
+  //         WHERE mi.id IN (?) 
+  //           AND mi.page_group IS NOT NULL 
+  //           AND mi.page_group != ''
+  //           AND mi.method_sort != 0  -- Exclude records where method_sort == 0
+  //       `;
+  
+  //       // If role_name is not 6, exclude 'user_role_access'
+  //       if (roleName !== 1) {
+  //         getPageGroupAndControllerNamesQuery += ` AND mi.controller_name != 'user_role_access'`;
+  //       }
+  
+  //       getPageGroupAndControllerNamesQuery += `
+  //         ORDER BY mi.controller_name ASC, mi.method_sort ASC
+  //       `;
+  
+  //       connection.query(getPageGroupAndControllerNamesQuery, [userPageListIds], (getPageGroupError, getPageGroupResults) => {
+  //         if (getPageGroupError) {
+  //           console.error('Error executing MySQL query:', getPageGroupError);
+  //           return res.status(500).json({ message: 'Internal server error' });
+  //         }
+  
+  //         const groupedData = getPageGroupResults.reduce((acc, row) => {
+  //           const { page_group, controller_name, display_name, method_name, method_sort, menu_type, menu_category, id, parent_id } = row;
+  //           const pageGroupLowerCase = page_group.toLowerCase();
+  
+  //           if (!acc[pageGroupLowerCase]) {
+  //             acc[pageGroupLowerCase] = {
+  //               page_group_id: '',
+  //               page_group: pageGroupLowerCase,
+  //               controllers: [],
+  //               display_names: [] // For direct display names when no controller
+  //             };
+  //           }
+  
+  //           if ( menu_category == 2) {
+  //             // If no controller_name, parent_id is NULL, and menu_category is 2, add directly under display_names
+  //             acc[pageGroupLowerCase].display_names.push({
+  //               display_name,
+  //               method_id: id,
+  //               method_sort,
+  //               menu_type,
+  //               method_names: [method_name]
+  //             });
+  //           } else {
+  //             // Otherwise, group under controllers
+  //             let controller = acc[pageGroupLowerCase].controllers.find((c) => c.controller_name.toLowerCase() === (controller_name || '').toLowerCase());
+  
+  //             if (controller) {
+  //               let display = controller.display_names.find((d) => d.display_name.toLowerCase() === display_name.toLowerCase());
+  //               if (display) {
+  //                 display.method_names.push(method_name);
+  //               } else {
+  //                 controller.display_names.push({
+  //                   display_name,
+  //                   method_id: id,
+  //                   method_sort,
+  //                   menu_type,
+  //                   method_names: [method_name]
+  //                 });
+  //               }
+  //             } else {
+  //               acc[pageGroupLowerCase].controllers.push({
+  //                 controller_name,
+  //                 display_names: [{
+  //                   display_name,
+  //                   method_id: id,
+  //                   method_sort,
+  //                   menu_type,
+  //                   method_names: [method_name]
+  //                 }]
+  //               });
+  //             }
+  //           }
+  
+  //           return acc;
+  //         }, {});
+  
+  //         const responseData = Object.values(groupedData);
+  
+  //         if (responseData.length > 0) {
+  //           res.json(responseData);
+  //         } else {
+  //           res.status(404).json({ message: 'Data not found' });
+  //         }
+  //       });
+  //     });
+  //   });
+  // },
+
   module_info_list_list: async (req, res) => {
     const userId = req.params.id;
+    
     const query = `SELECT role_name FROM users WHERE id = ?`;
-  
     connection.query(query, [userId], (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
-        res.status(500).send('Internal Server Error');
-        return;
+        return res.status(500).send('Internal Server Error');
       }
   
       if (results.length === 0) {
         console.log('User not found');
-        res.status(404).send('User not found');
-        return;
+        return res.status(404).send('User not found');
       }
   
       const roleName = results[0].role_name;
       console.log('Role name:', roleName);
   
       const permissionQuery = `SELECT user_page_list_id FROM user_role_permission WHERE user_role_id = ?`;
-  
       connection.query(permissionQuery, [roleName], (permissionError, permissionResults) => {
         if (permissionError) {
           console.error('Error executing permission query:', permissionError);
-          res.status(500).send('Internal Server Error');
-          return;
+          return res.status(500).send('Internal Server Error');
         }
   
         if (permissionResults.length === 0) {
           console.log('No permissions found for the role:', roleName);
-          res.status(404).send('No permissions found for the role');
-          return;
+          return res.status(404).send('No permissions found for the role');
         }
   
         const userPageListId = permissionResults[0].user_page_list_id;
@@ -2518,41 +2759,32 @@ HAVING mi.page_group IS NOT NULL AND mi.page_group != '';
         console.log('User page list id:', userPageListIds);
   
         let getPageGroupAndControllerNamesQuery = `
-          SELECT mi.id AS page_group_id, mi.page_group, mi.controller_name, mi.display_name, mi.method_name, mi.method_sort, mi.menu_type, mi.id
+          SELECT mi.id AS page_group_id, mi.page_group, mi.controller_name, mi.display_name, 
+                 mi.method_name, mi.method_sort, mi.menu_type, mi.menu_category, mi.parent_id 
           FROM module_info mi
-          WHERE mi.parent_id != 0
-            AND mi.id IN (?)
-            AND mi.page_group IS NOT NULL
+          WHERE mi.id IN (?) 
+            AND mi.page_group IS NOT NULL 
             AND mi.page_group != ''
+            AND mi.method_sort != 0  -- Exclude records where method_sort == 0
         `;
   
-        // If the role_name is not 6, exclude 'user_role_access'
+        // If role_name is not 1, exclude 'user_role_access'
         if (roleName !== 1) {
           getPageGroupAndControllerNamesQuery += ` AND mi.controller_name != 'user_role_access'`;
         }
   
         getPageGroupAndControllerNamesQuery += `
-          GROUP BY mi.page_group, mi.controller_name, mi.display_name, mi.method_name, mi.method_sort, mi.menu_type, mi.id
-          ORDER BY mi.controller_sort ASC, mi.method_sort ASC
+          ORDER BY mi.controller_name DESC, mi.method_sort ASC
         `;
   
         connection.query(getPageGroupAndControllerNamesQuery, [userPageListIds], (getPageGroupError, getPageGroupResults) => {
           if (getPageGroupError) {
             console.error('Error executing MySQL query:', getPageGroupError);
-            res.status(500).json({ message: 'Internal server error' });
-            return;
+            return res.status(500).json({ message: 'Internal server error' });
           }
   
-          // Ensure no 'user_role_access' controller is shown if role_name is not 6
-          const filteredResults = getPageGroupResults.filter((row) => {
-            if (row.controller_name === 'user_role_access' && roleName !== 1) {
-              return false;
-            }
-            return true;
-          });
-  
-          const groupedData = filteredResults.reduce((acc, row) => {
-            const { page_group_id, page_group, controller_name, display_name, method_name, method_sort, menu_type, id } = row;
+          const groupedData = getPageGroupResults.reduce((acc, row) => {
+            const { page_group, controller_name, display_name, method_name, method_sort, menu_type, menu_category, id, parent_id } = row;
             const pageGroupLowerCase = page_group.toLowerCase();
   
             if (!acc[pageGroupLowerCase]) {
@@ -2560,26 +2792,57 @@ HAVING mi.page_group IS NOT NULL AND mi.page_group != '';
                 page_group_id: '',
                 page_group: pageGroupLowerCase,
                 controllers: [],
+                display_names: [] // For direct display names when no controller
               };
             }
   
-            const controller = acc[pageGroupLowerCase].controllers.find((c) => c.controller_name.toLowerCase() === controller_name.toLowerCase());
-  
-            if (controller) {
-              const display = controller.display_names.find((d) => d.display_name.toLowerCase() === display_name.toLowerCase());
-              if (display) {
-                display.method_id = id;
-                display.method_sort = method_sort;
-                display.menu_type = menu_type;
-              } else {
-                controller.display_names.push({ display_name, method_id: id, method_sort, menu_type, method_names: [method_name] });
-              }
+            if ( menu_category == 2) {
+              // If menu_category is 2, add directly under controllers as an object
+              const controllerObj = {
+                controller_names: controller_name,
+                controller_name: '',
+                display_names: [{
+                  menu_category,
+                  display_name,
+                  method_id: id,
+                  method_sort,
+                  menu_type,
+                  method_names: [method_name]
+                }]
+              };
+            
+              acc[pageGroupLowerCase].controllers.push(controllerObj);
             } else {
-              acc[pageGroupLowerCase].controllers.push({
-                controller_name,
-                display_names: [{ display_name, method_id: id, method_sort, menu_type, method_names: [method_name] }],
-              });
+              // Otherwise, group under controllers (existing logic)
+              let controller = acc[pageGroupLowerCase].controllers.find((c) => c.controller_name.toLowerCase() === (controller_name || '').toLowerCase());
+            
+              if (controller) {
+                let display = controller.display_names.find((d) => d.display_name.toLowerCase() === display_name.toLowerCase());
+                if (display) {
+                  display.method_names.push(method_name);
+                } else {
+                  controller.display_names.push({
+                    display_name,
+                    method_id: id,
+                    method_sort,
+                    menu_type,
+                    method_names: [method_name]
+                  });
+                }
+              } else {
+                acc[pageGroupLowerCase].controllers.push({
+                  controller_name,
+                  display_names: [{
+                    display_name,
+                    method_id: id,
+                    method_sort,
+                    menu_type,
+                    method_names: [method_name]
+                  }]
+                });
+              }
             }
+            
   
             return acc;
           }, {});
@@ -2596,8 +2859,138 @@ HAVING mi.page_group IS NOT NULL AND mi.page_group != '';
     });
   },
   
+  // module_info_list_list: async (req, res) => {
+  //   const userId = req.params.id;
+    
+  //   const query = `SELECT role_name FROM users WHERE id = ?`;
+  //   connection.query(query, [userId], (error, results) => {
+  //     if (error) {
+  //       console.error('Error executing query:', error);
+  //       return res.status(500).send('Internal Server Error');
+  //     }
   
-
+  //     if (results.length === 0) {
+  //       console.log('User not found');
+  //       return res.status(404).send('User not found');
+  //     }
+  
+  //     const roleName = results[0].role_name;
+  //     console.log('Role name:', roleName);
+  
+  //     const permissionQuery = `SELECT user_page_list_id FROM user_role_permission WHERE user_role_id = ?`;
+  //     connection.query(permissionQuery, [roleName], (permissionError, permissionResults) => {
+  //       if (permissionError) {
+  //         console.error('Error executing permission query:', permissionError);
+  //         return res.status(500).send('Internal Server Error');
+  //       }
+  
+  //       if (permissionResults.length === 0) {
+  //         console.log('No permissions found for the role:', roleName);
+  //         return res.status(404).send('No permissions found for the role');
+  //       }
+  
+  //       const userPageListId = permissionResults[0].user_page_list_id;
+  //       const userPageListIds = userPageListId.split(',').map(Number);
+  //       console.log('User page list id:', userPageListIds);
+  
+  //       let getPageGroupAndControllerNamesQuery = `
+  //         SELECT mi.id AS page_group_id, mi.page_group, mi.controller_name, mi.display_name, 
+  //                mi.method_name, mi.method_sort, mi.menu_type, mi.menu_category, mi.parent_id 
+  //         FROM module_info mi
+  //         WHERE mi.id IN (?) 
+  //           AND mi.page_group IS NOT NULL 
+  //           AND mi.page_group != ''
+  //           AND mi.method_sort != 0  -- Exclude records where method_sort == 0
+  //       `;
+  
+  //       // If role_name is not 1, exclude 'user_role_access'
+  //       if (roleName !== 1) {
+  //         getPageGroupAndControllerNamesQuery += ` AND mi.controller_name != 'user_role_access'`;
+  //       }
+  
+  //       getPageGroupAndControllerNamesQuery += `
+  //         ORDER BY mi.controller_name ASC, mi.method_sort ASC
+  //       `;
+  
+  //       connection.query(getPageGroupAndControllerNamesQuery, [userPageListIds], (getPageGroupError, getPageGroupResults) => {
+  //         if (getPageGroupError) {
+  //           console.error('Error executing MySQL query:', getPageGroupError);
+  //           return res.status(500).json({ message: 'Internal server error' });
+  //         }
+  
+  //         const groupedData = getPageGroupResults.reduce((acc, row) => {
+  //           const { page_group, controller_name, display_name, method_name, method_sort, menu_type, menu_category, id, parent_id } = row;
+  //           const pageGroupLowerCase = page_group.toLowerCase();
+  
+  //           if (!acc[pageGroupLowerCase]) {
+  //             acc[pageGroupLowerCase] = {
+  //               page_group_id: '',
+  //               page_group: pageGroupLowerCase,
+  //               controllers: [],
+  //               display_names: [] // For direct display names when no controller
+  //             };
+  //           }
+  
+  //           if (menu_category == 2) {
+  //             // If menu_category is 2, add directly under controllers as an object, and exclude controller_name
+  //             const controllerObj = {
+  //               display_names: [{
+  //                 display_name,
+  //                 method_id: id,
+  //                 method_sort,
+  //                 menu_type,
+  //                 method_names: [method_name]
+  //               }]
+  //             };
+            
+  //             acc[pageGroupLowerCase].controllers.push(controllerObj);
+  //           } else {
+  //             // Otherwise, group under controllers with controller_name
+  //             let controller = acc[pageGroupLowerCase].controllers.find((c) => c.controller_name && c.controller_name.toLowerCase() === (controller_name || '').toLowerCase());
+  
+  //             if (controller) {
+  //               let display = controller.display_names.find((d) => d.display_name.toLowerCase() === display_name.toLowerCase());
+  //               if (display) {
+  //                 display.method_names.push(method_name);
+  //               } else {
+  //                 controller.display_names.push({
+  //                   display_name,
+  //                   method_id: id,
+  //                   method_sort,
+  //                   menu_type,
+  //                   method_names: [method_name]
+  //                 });
+  //               }
+  //             } else {
+  //               acc[pageGroupLowerCase].controllers.push({
+  //                 controller_name,
+  //                 display_names: [{
+  //                   display_name,
+  //                   method_id: id,
+  //                   method_sort,
+  //                   menu_type,
+  //                   method_names: [method_name]
+  //                 }]
+  //               });
+  //             }
+  //           }
+  
+  //           return acc;
+  //         }, {});
+  
+  //         const responseData = Object.values(groupedData);
+  
+  //         if (responseData.length > 0) {
+  //           res.json(responseData);
+  //         } else {
+  //           res.status(404).json({ message: 'Data not found' });
+  //         }
+  //       });
+  //     });
+  //   });
+  // },
+  
+  
   // module_info_list_list: async (req, res) => {
   //   const query = `
   // SELECT mi.id AS page_group_id, mi.page_group, mi.controller_name, mi.display_name, mi.method_name, mi.id
